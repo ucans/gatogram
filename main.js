@@ -1,8 +1,6 @@
 
-let camera, scene, renderer;
-let geometry, material, mesh;
-
-//init();
+//let camera, scene, renderer;
+//let geometry, material, mesh;
 
 window.onload = function init() {
   const canvas = document.getElementById("gl-canvas");
