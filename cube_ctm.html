@@ -1,0 +1,161 @@
+<html>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+attribute  vec4 vPosition;
+attribute  vec4 vNormal;
+
+varying vec3 N, L, V;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform vec4 lightPosition;
+
+void main() 
+{
+    vec3 pos = (modelViewMatrix * vPosition).xyz;
+	
+	if(lightPosition.w==0.0)
+		L=normalize((modelViewMatrix*lightPosition).xyz);
+	else
+		L=normalize((modelViewMatrix*lightPosition).xyz-pos);
+		
+	V = -normalize(pos);
+	N = normalize((modelViewMatrix*vNormal).xyz);
+	
+	gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+
+} 
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+   
+uniform vec4 ambientProduct;
+uniform vec4 diffuseProduct;
+uniform vec4 specularProduct;
+
+uniform float shininess;
+
+varying vec3 N, L, V;
+
+void
+main()
+{
+    vec4 fColor;
+	
+	vec3 H=normalize(L+V);
+	
+	vec4 ambient=ambientProduct;
+	
+	float Cd=max(dot(L, N), 0.0);
+	vec4 diffuse=Cd*diffuseProduct;
+	
+	float Cs=pow(max(dot(N, H), 0.0), shininess);
+	vec4 specular=Cs*specularProduct;
+	
+	if(dot(L, N)<0.0)
+		specular=vec4(0.0, 0.0, 0.0, 1.0);
+	
+	fColor=ambient+diffuse+specular;
+	fColor.a=1.0;
+	
+	gl_FragColor=fColor;
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="cube_ctm.js"></script>
+
+<div>
+torso angle -180 <input id="slider0" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+<div>
+head2 angle -180 <input id="slider10" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+
+<div>
+head1 angle -180 <input id="slider1" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+
+<div>
+left upper arm angle -180 <input id="slider2" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+<div>
+left lower arm angle -180 <input id="slider3" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+<div>
+right upper arm angle -180 <input id="slider4" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+<div>
+right lower arm angle -180 <input id="slider5" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+<div>
+left upper leg angle -180 <input id="slider6" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+<div>
+left lower leg angle -180 <input id="slider7" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+<div>
+right upper leg angle -180 <input id="slider8" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+
+<div>
+right lower leg angle -180 <input id="slider9" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
+
+<body>
+
+<canvas id="gl-canvas" width="512"" height="512">
+Oops ... your browser doesn't support the HTML5 canvas element
+</canvas>
+   
+<br/>
+<p></p>
+<button id= "btnIR">Increase R</button>
+<button id= "btnDR">Decrease R</button>
+<p></p>
+<button id= "btnIP">Inccrease Phi</button>
+<button id= "btnDP">Decrease Phi</button>
+<p></p>
+<button id="btnIS">Increase Subdivision</button>
+<button id="btnDS">Decrease Subdivision</button>
+
+</body>
+</html>
