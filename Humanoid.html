@@ -18,9 +18,12 @@ void main()
 
 precision mediump float;
 
+uniform vec4 fColor;
+
 void main()
 {
-    gl_FragColor = vec4(0.0, 0.0, 1.0, 1.0);
+	gl_FragColor = fColor;
+	//gl_FragColor = vec4(0.0, 0.0, 0.501961, 1.0);
 
 }
 </script>
@@ -101,7 +104,14 @@ right lower leg angle -180 <input id="slider9" type="range"
   />
  180
 </div><br/>
+<div>
+flask angle -180 <input id="slider11" type="range"
+ min="-180" max="180" step="10" value="0"
+  />
+ 180
+</div><br/>
 
+<button id="stopButton">STOP</button><br>
 
 <body>
 
