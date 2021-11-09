@@ -327,7 +327,7 @@ window.onload = function init() {
     var vPosition = gl.getAttribLocation( program, "vPosition" );
     gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
-	
+
     document.getElementById("slider0").onchange = function(event) {
 		console.log(event.target.value);
         theta[torsoId ] = event.target.value;
@@ -394,7 +394,7 @@ var render = function() {
         gl.clear( gl.COLOR_BUFFER_BIT );
         traverse(torsoId);
 		playAnimation();
-		
+
         requestAnimFrame(render);
 }
 
@@ -406,11 +406,11 @@ var anim1Playtime = 0;
 
 var Animation1 = function (){
 	if(animOrder == 1 && anim1Playtime <= 100){
-		swingNode(leftUpperArmId, 115, 235, 2.5);
-		swingNode(rightUpperArmId, 115, 235, 2.5);
-		swingNode(leftUpperLegId, 140, 220, 2.0);
-		swingNode(rightUpperLegId, 140, 220, 2.0);
-		anim1Playtime += 1;
+		swingNode(leftLowerArmId, 115, 235, 2.5);
+		swingNode(rightLowerArmId, 115, 235, 2.5);
+		//swingNode(leftUpperLegId, 140, 220, 2.0);
+		//swingNode(rightUpperLegId, 140, 220, 2.0);
+		//anim1Playtime += 1;
 	}
 	else {
 		animOrder = 2;
@@ -420,15 +420,9 @@ var Animation1 = function (){
 
 var anim2Playtime = 0;
 
-var Animation2 = function (){
-	if(animOrder == 2 && anim2Playtime <= 100){
-		moveNode(torsoId, 0.5);
-		anim2Playtime += 1;
-	}
-	//else Animation3();
-}
 
-var Animation3 = function (){
+
+var Animation3 = function (){  //팔,다리 흔드는 애니메이션
 	if(animOrder == 3){
 		swingJoint(leftUpperArmId, 115, 235, 2.5);
 		swingJoint(rightUpperArmId, 115, 235, 2.5);
@@ -438,14 +432,15 @@ var Animation3 = function (){
 	else Animation4();
 }
 
-function swingNode(Id, min, max, speed){
+
+function swingNode(Id, min, max, speed){  //흔드는 각도와 스피드
 	// 팔 각도범위 135~235
 	// 윗다리 140~220
 	if(movingDirections[Id] == FORWARD)
 		theta[Id] += speed;
 	else 
 		theta[Id] -= speed;
-	
+
 	if(theta[Id] >= max)
 		movingDirections[Id] = BACKWARD;
 	if(theta[Id] <= min)
@@ -453,13 +448,14 @@ function swingNode(Id, min, max, speed){
 	initNodes(Id);
 }
 
-function moveNode(Id, speed){
+/*
+function moveNode(Id, speed){  //마지막에 도는함수
 	// 방향설정은 함수호출 이전에
-	
+
 	if(movingDirections[Id] == FORWARD)
 		theta[Id] += speed;
 	else 
 		theta[Id] -= speed;
 
 	initNodes(Id);
-}
+} */
