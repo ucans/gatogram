@@ -1,10 +1,6 @@
 <html>
-
-
 <script id="vertex-shader" type="x-shader/x-vertex">
-
 attribute  vec4 vPosition;
-
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 
@@ -15,9 +11,7 @@ void main()
 </script>
 
 <script id="fragment-shader" type="x-shader/x-fragment">
-
 precision mediump float;
-
 uniform vec4 fColor;
 
 void main()
@@ -27,8 +21,6 @@ void main()
 
 }
 </script>
-
-
 
 <script type="text/javascript" src="../Common/webgl-utils.js"></script>
 <script type="text/javascript" src="../Common/initShaders.js"></script>
@@ -111,14 +103,10 @@ flask angle -180 <input id="slider11" type="range"
  180
 </div><br/>
 
-<button id="stopButton">STOP</button><br>
-
 <body>
-
-
-
-<canvas id="gl-canvas" width="512"" height="512"
-Oops ... your browser doesn't support the HTML5 canvas element
-</canvas>
+    <button id="stopButton">STOP</button><br>
+    <canvas id="gl-canvas" width="512"" height="512"
+    Oops ... your browser doesn't support the HTML5 canvas element
+    </canvas>
 </body>
 </html>

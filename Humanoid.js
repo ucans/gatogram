@@ -6,13 +6,10 @@ var program;
 
 var projectionMatrix;
 var modelViewMatrix;
-
 var instanceMatrix;
-
 var modelViewMatrixLoc;
 
 var vertices = [
-
     vec4( -0.5, -0.5,  0.5, 1.0 ),
     vec4( -0.5,  0.5,  0.5, 1.0 ),
     vec4( 0.5,  0.5,  0.5, 1.0 ),
@@ -23,23 +20,21 @@ var vertices = [
     vec4( 0.5, -0.5, -0.5, 1.0 )
 ];
 
-
-var torsoId = 0;
-var headId  = 1;
-var head1Id = 1;
-var head2Id = 11;
-var leftUpperArmId = 2;
-var leftLowerArmId = 3;
-var rightUpperArmId = 4;
-var rightLowerArmId = 5;
-var leftUpperLegId = 6;
-var leftLowerLegId = 7;
-var rightUpperLegId = 8;
-var rightLowerLegId = 9;
+const TORSO_ID = 0;
+const HEAD_ID  = 1;
+const HEAD1_ID = 1;
+const HEAD2_ID = 11;
+const LEFT_UPEER_ARM_ID = 2;
+const LEFT_LOWER_ARM_ID = 3;
+const RIGHT_UPPER_ARM_ID = 4;
+const RIGHT_LOWER_ARM_ID = 5;
+const LEFT_UPPER_LEG_ID = 6;
+const LEFT_LOWER_LEG_ID = 7;
+const RIGHT_UPPER_LEG_ID = 8;
+const RIGHT_LOWER_LEG_ID = 9;
 // ==========Added variables==========
 var flaskId = 10;
 // ===================================
-
 var torsoHeight = 5.0;
 var torsoWidth = 1.0;
 var upperArmHeight = 3.0;
@@ -80,14 +75,11 @@ var stopButton = false;
 
 var numNodes = 11;
 var numAngles = 12;
-
 var theta = [30, 0, 120, -110, 100, -35, 180, 0, 180, 0, 110, 0];
-
 var stack = [];
-
 var figure = [];
 
-for( var i=0; i<numNodes; i++) figure[i] = createNode(null, null, null, null);
+for( var i=0; i < numNodes; i++) figure[i] = createNode(null, null, null, null);
 
 var vBuffer;
 var modelViewLoc;
@@ -124,65 +116,64 @@ function initNodes(Id) {
 
     switch(Id) {
 
-    case torsoId:
+    case TORSO_ID:
 
-    m = rotate(theta[torsoId], 0, 1, 0 );
-    figure[torsoId] = createNode( m, torso, null, headId );
+    m = rotate(theta[TORSO_ID], 0, 1, 0 );
+    figure[TORSO_ID] = createNode( m, torso, null, HEAD_ID );
     break;
 
-    case headId:
-    case head1Id:
-    case head2Id:
-
+    case HEAD_ID:
+    case HEAD1_ID:
+    case HEAD2_ID:
 
     m = translate(0.0, torsoHeight+0.5*headHeight, 0.0);
-	m = mult(m, rotate(theta[head1Id], 1, 0, 0))
-	m = mult(m, rotate(theta[head2Id], 0, 1, 0));
+	m = mult(m, rotate(theta[HEAD1_ID], 1, 0, 0))
+	m = mult(m, rotate(theta[HEAD2_ID], 0, 1, 0));
     m = mult(m, translate(0.0, -0.5*headHeight, 0.0));
-    figure[headId] = createNode( m, head, leftUpperArmId, null);
+    figure[HEAD_ID] = createNode( m, head, LEFT_UPEER_ARM_ID, null);
     break;
 
 
-    case leftUpperArmId:
+    case LEFT_UPEER_ARM_ID:
 
     m = translate(-(torsoWidth+upperArmWidth), 0.9*torsoHeight, 0.0);
-	m = mult(m, rotate(theta[leftUpperArmId], 1, 0, 0));
-    figure[leftUpperArmId] = createNode( m, leftUpperArm, rightUpperArmId, leftLowerArmId );
+	m = mult(m, rotate(theta[LEFT_UPEER_ARM_ID], 1, 0, 0));
+    figure[LEFT_UPEER_ARM_ID] = createNode( m, leftUpperArm, RIGHT_UPPER_ARM_ID, LEFT_LOWER_ARM_ID );
     break;
 
-    case rightUpperArmId:
+    case RIGHT_UPPER_ARM_ID:
 
     m = translate(torsoWidth+upperArmWidth, 0.9*torsoHeight, 0.0);
-	m = mult(m, rotate(theta[rightUpperArmId], 1, 0, 0));
-    figure[rightUpperArmId] = createNode( m, rightUpperArm, leftUpperLegId, rightLowerArmId );
+	m = mult(m, rotate(theta[RIGHT_UPPER_ARM_ID], 1, 0, 0));
+    figure[RIGHT_UPPER_ARM_ID] = createNode( m, rightUpperArm, LEFT_UPPER_LEG_ID, RIGHT_LOWER_ARM_ID );
     break;
 
-    case leftUpperLegId:
+    case LEFT_UPPER_LEG_ID:
 
     m = translate(-(torsoWidth+upperLegWidth), 0.1*upperLegHeight, 0.0);
-	m = mult(m , rotate(theta[leftUpperLegId], 1, 0, 0));
-    figure[leftUpperLegId] = createNode( m, leftUpperLeg, rightUpperLegId, leftLowerLegId );
+	m = mult(m , rotate(theta[LEFT_UPPER_LEG_ID], 1, 0, 0));
+    figure[LEFT_UPPER_LEG_ID] = createNode( m, leftUpperLeg, RIGHT_UPPER_LEG_ID, LEFT_LOWER_LEG_ID );
     break;
 
-    case rightUpperLegId:
+    case RIGHT_UPPER_LEG_ID:
 
     m = translate(torsoWidth+upperLegWidth, 0.1*upperLegHeight, 0.0);
-	m = mult(m, rotate(theta[rightUpperLegId], 1, 0, 0));
-    figure[rightUpperLegId] = createNode( m, rightUpperLeg, null, rightLowerLegId );
+	m = mult(m, rotate(theta[RIGHT_UPPER_LEG_ID], 1, 0, 0));
+    figure[RIGHT_UPPER_LEG_ID] = createNode( m, rightUpperLeg, null, RIGHT_LOWER_LEG_ID );
     break;
 
-    case leftLowerArmId:
+    case LEFT_LOWER_ARM_ID:
 
     m = translate(0.0, upperArmHeight, 0.0);
-    m = mult(m, rotate(theta[leftLowerArmId], 1, 0, 0));
-    figure[leftLowerArmId] = createNode( m, leftLowerArm, null, null );
+    m = mult(m, rotate(theta[LEFT_LOWER_ARM_ID], 1, 0, 0));
+    figure[LEFT_LOWER_ARM_ID] = createNode( m, leftLowerArm, null, null );
     break;
 
-    case rightLowerArmId:
+    case RIGHT_LOWER_ARM_ID:
 
     m = translate(0.0, upperArmHeight, 0.0);
-    m = mult(m, rotate(theta[rightLowerArmId], 1, 0, 0));
-    figure[rightLowerArmId] = createNode( m, rightLowerArm, null, flaskId);
+    m = mult(m, rotate(theta[RIGHT_LOWER_ARM_ID], 1, 0, 0));
+    figure[RIGHT_LOWER_ARM_ID] = createNode( m, rightLowerArm, null, flaskId);
     break;
 
 	case flaskId:
@@ -193,18 +184,18 @@ function initNodes(Id) {
     break;
     
 	
-    case leftLowerLegId:
+    case LEFT_LOWER_LEG_ID:
 
     m = translate(0.0, upperLegHeight, 0.0);
-    m = mult(m, rotate(theta[leftLowerLegId], 1, 0, 0));
-    figure[leftLowerLegId] = createNode( m, leftLowerLeg, null, null );
+    m = mult(m, rotate(theta[LEFT_LOWER_LEG_ID], 1, 0, 0));
+    figure[LEFT_LOWER_LEG_ID] = createNode( m, leftLowerLeg, null, null );
     break;
 
-    case rightLowerLegId:
+    case RIGHT_LOWER_LEG_ID:
 
     m = translate(0.0, upperLegHeight, 0.0);
-    m = mult(m, rotate(theta[rightLowerLegId], 1, 0, 0));
-    figure[rightLowerLegId] = createNode( m, rightLowerLeg, null, null );
+    m = mult(m, rotate(theta[RIGHT_LOWER_LEG_ID], 1, 0, 0));
+    figure[RIGHT_LOWER_LEG_ID] = createNode( m, rightLowerLeg, null, null );
     break;
 	
 	
@@ -335,7 +326,6 @@ function cube()
 window.onload = function init() {
 
     canvas = document.getElementById( "gl-canvas" );
-
     gl = WebGLUtils.setupWebGL( canvas );
     if ( !gl ) { alert( "WebGL isn't available" ); }
 
@@ -346,14 +336,10 @@ window.onload = function init() {
     //  Load shaders and initialize attribute buffers
     //
     program = initShaders( gl, "vertex-shader", "fragment-shader");
-
     gl.useProgram( program);
-
     instanceMatrix = mat4();
-
     projectionMatrix = ortho(-10.0,10.0,-10.0, 10.0,-10.0,10.0);
     modelViewMatrix = mat4();
-
 
     gl.uniformMatrix4fv(gl.getUniformLocation( program, "modelViewMatrix"), false, flatten(modelViewMatrix) );
     gl.uniformMatrix4fv( gl.getUniformLocation( program, "projectionMatrix"), false, flatten(projectionMatrix) );
@@ -374,58 +360,58 @@ window.onload = function init() {
 	
     document.getElementById("slider0").onchange = function(event) {
 		console.log(event.target.value);
-        theta[torsoId ] = event.target.value;
-        initNodes(torsoId);
+        theta[TORSO_ID] = event.target.value;
+        initNodes(TORSO_ID);
     };
     document.getElementById("slider1").onchange = function(event) {
 		 console.log(event.target.value);
-        theta[head1Id] = event.target.value;
-        initNodes(head1Id);
+        theta[HEAD1_ID] = event.target.value;
+        initNodes(HEAD1_ID);
     };
     document.getElementById("slider2").onchange = function(event) {
 		 console.log(event.target.value);
-         theta[leftUpperArmId] = event.target.value;
-         initNodes(leftUpperArmId);
+         theta[LEFT_UPEER_ARM_ID] = event.target.value;
+         initNodes(LEFT_UPEER_ARM_ID);
     };
     document.getElementById("slider3").onchange = function(event) {  
 		 console.log(event.target.value);  
-		 theta[leftLowerArmId] =  event.target.value;
-         initNodes(leftLowerArmId);
+		 theta[LEFT_LOWER_ARM_ID] =  event.target.value;
+         initNodes(LEFT_LOWER_ARM_ID);
     };
     document.getElementById("slider4").onchange = function(event) {
 		console.log(event.target.value);        
-        theta[rightUpperArmId] = event.target.value;
-        initNodes(rightUpperArmId);
+        theta[RIGHT_UPPER_ARM_ID] = event.target.value;
+        initNodes(RIGHT_UPPER_ARM_ID);
     };
     document.getElementById("slider5").onchange = function(event) {
 		 console.log(event.target.value);
-		theta[rightLowerArmId] =  event.target.value;
-         initNodes(rightLowerArmId);
+		theta[RIGHT_LOWER_ARM_ID] =  event.target.value;
+         initNodes(RIGHT_LOWER_ARM_ID);
     };
     document.getElementById("slider6").onchange = function(event) {
 		 console.log(event.target.value);
-        theta[leftUpperLegId] = event.target.value;
-        initNodes(leftUpperLegId);
+        theta[LEFT_UPPER_LEG_ID] = event.target.value;
+        initNodes(LEFT_UPPER_LEG_ID);
     };
     document.getElementById("slider7").onchange = function(event) {
 		 console.log(event.target.value);
-         theta[leftLowerLegId] = event.target.value;
-         initNodes(leftLowerLegId);
+         theta[LEFT_LOWER_LEG_ID] = event.target.value;
+         initNodes(LEFT_LOWER_LEG_ID);
     };
     document.getElementById("slider8").onchange = function(event) {
 		 console.log(event.target.value);
-         theta[rightUpperLegId] =  event.target.value;
-         initNodes(rightUpperLegId);
+         theta[RIGHT_UPPER_LEG_ID] =  event.target.value;
+         initNodes(RIGHT_UPPER_LEG_ID);
     };
     document.getElementById("slider9").onchange = function(event) {
 		 console.log(event.target.value);
-        theta[rightLowerLegId] = event.target.value;
-        initNodes(rightLowerLegId);
+        theta[RIGHT_LOWER_LEG_ID] = event.target.value;
+        initNodes(RIGHT_LOWER_LEG_ID);
     };
     document.getElementById("slider10").onchange = function(event) {
 		 console.log(event.target.value);
-         theta[head2Id] = event.target.value;
-         initNodes(head2Id);
+         theta[HEAD2_ID] = event.target.value;
+         initNodes(HEAD2_ID);
     };
 	document.getElementById("slider11").onchange = function(event) {
 		 console.log(event.target.value);
@@ -445,7 +431,7 @@ window.onload = function init() {
 
 var render = function() {
         gl.clear( gl.COLOR_BUFFER_BIT );
-        traverse(torsoId);
+        traverse(TORSO_ID);
 		if(stopButton)
 			playAnimation();
 		
@@ -460,10 +446,10 @@ var anim1Playtime = 0;
 
 var Animation1 = function (){
 	if(animOrder == 1 && anim1Playtime <= 100){
-		swingNode(leftUpperArmId, 115, 235, 2.5);
-		swingNode(rightUpperArmId, 115, 235, 2.5);
-		swingNode(leftUpperLegId, 140, 220, 2.0);
-		swingNode(rightUpperLegId, 140, 220, 2.0);
+		swingNode(LEFT_UPEER_ARM_ID, 115, 235, 2.5);
+		swingNode(RIGHT_UPPER_ARM_ID, 115, 235, 2.5);
+		swingNode(LEFT_UPPER_LEG_ID, 140, 220, 2.0);
+		swingNode(RIGHT_UPPER_LEG_ID, 140, 220, 2.0);
 		anim1Playtime += 1;
 	}
 	else {
@@ -476,7 +462,7 @@ var anim2Playtime = 0;
 
 var Animation2 = function (){
 	if(animOrder == 2 && anim2Playtime <= 100){
-		moveNode(torsoId, -0.5);
+		moveNode(TORSO_ID, -0.5);
 		anim2Playtime += 1;
 	}
 	//else Animation3();
@@ -484,10 +470,10 @@ var Animation2 = function (){
 
 var Animation3 = function (){
 	if(animOrder == 3){
-		swingJoint(leftUpperArmId, 115, 235, 2.5);
-		swingJoint(rightUpperArmId, 115, 235, 2.5);
-		swingJoint(leftUpperLegId, 140, 220, 2.0);
-		swingJoint(rightUpperLegId, 140, 220, 2.0);
+		swingJoint(LEFT_UPEER_ARM_ID, 115, 235, 2.5);
+		swingJoint(RIGHT_UPPER_ARM_ID, 115, 235, 2.5);
+		swingJoint(LEFT_UPPER_LEG_ID, 140, 220, 2.0);
+		swingJoint(RIGHT_UPPER_LEG_ID, 140, 220, 2.0);
 	}
 	else Animation4();
 }
