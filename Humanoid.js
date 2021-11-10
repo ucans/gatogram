@@ -21,9 +21,12 @@ var vertices = [
 ];
 
 const TORSO_ID = 0;
+const TORSO_X_ID = 11;
+const TORSO_Y_ID = 0;
+const TORSO_Z_ID = 12;
 const HEAD_ID = 1;
-const HEAD1_ID = 1;
-const HEAD2_ID = 10;
+const HEAD_X_ID = 1;
+const HEAD_Y_ID = 10;
 const LEFT_UPEER_ARM_ID = 2;
 const LEFT_LOWER_ARM_ID = 3;
 const RIGHT_UPPER_ARM_ID = 4;
@@ -33,7 +36,8 @@ const LEFT_LOWER_LEG_ID = 7;
 const RIGHT_UPPER_LEG_ID = 8;
 const RIGHT_LOWER_LEG_ID = 9;
 // ==========Added variables==========
-const BOARD_ID = 11;
+// TODO : 보드 추가
+//const BOARD_ID = 11;
 
 // ===================================
 var torsoHeight = 5.0;
@@ -55,24 +59,19 @@ var boardWidth;
 
 // Vriables with moving
 //
-var movingDirections = [1, 1, 1, 1, 1, 1, 1, 0, 0, 1];
+var movingDirections = [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1];
 // TODO : Animation 3때문에 3으로 바뀜
 var animOrder = 3;
 const FORWARD = 1;
 const BACKWARD = 0;
 
-// Variables with Animation
-var timeAnim1 = 0;
-var timeAnim2 = 0;
-var timeAnim3 = 0;
-
 var fColor;
-var stopButton = true;
+var stopButton = false;
 
 // TODO : 보드 추가해야함
-var numNodes = 10;
-var numAngles = 11;
-var theta = [45, 0, 120, 280, 110, 280, 190, 10, 160, 20, 0];
+var numNodes = 12;
+var numAngles = 13;
+var theta = [45, 0, 120, 280, 110, 280, 190, 10, 160, 20, 0, 0, 0];
 var stack = [];
 var figure = [];
 
@@ -105,17 +104,20 @@ function initNodes(Id) {
   var m = mat4();
 
   switch (Id) {
-    case TORSO_ID:
+    case TORSO_ID, TORSO_X_ID:
       m = rotate(theta[TORSO_ID], 0, 1, 0);
+      m = mult(m, rotate(theta[TORSO_X_ID], 1, 0, 0));
+      //m = mult(m, rotate(theta[TORSO_Y_ID], 0, 1, 0));
+      m = mult(m, rotate(theta[TORSO_Z_ID], 0, 0, 1));
       figure[TORSO_ID] = createNode(m, torso, null, HEAD_ID);
       break;
 
     case HEAD_ID:
-    case HEAD1_ID:
-    case HEAD2_ID:
+    case HEAD_X_ID:
+    case HEAD_Y_ID:
       m = translate(0.0, torsoHeight + 0.5 * headHeight, 0.0);
-      m = mult(m, rotate(theta[HEAD1_ID], 1, 0, 0));
-      m = mult(m, rotate(theta[HEAD2_ID], 0, 1, 0));
+      m = mult(m, rotate(theta[HEAD_X_ID], 1, 0, 0));
+      m = mult(m, rotate(theta[HEAD_Y_ID], 0, 1, 0));
       m = mult(m, translate(0.0, -0.5 * headHeight, 0.0));
       figure[HEAD_ID] = createNode(m, head, LEFT_UPEER_ARM_ID, null);
       break;
@@ -189,8 +191,8 @@ function initNodes(Id) {
       break;
 
     // TODO : Board의 initNode 설정
-    case BOARD_ID:
-      break;
+    // case BOARD_ID:
+    //   break;
   }
 }
 
@@ -404,10 +406,20 @@ window.onload = function init() {
     theta[TORSO_ID] = event.target.value;
     initNodes(TORSO_ID);
   };
+  document.getElementById("slider12").onchange = function (event) {
+    console.log(event.target.value);
+    theta[TORSO_X_ID] = event.target.value;
+    initNodes(TORSO_ID);
+  };
+  document.getElementById("slider13").onchange = function (event) {
+    console.log(event.target.value);
+    theta[TORSO_Z_ID] = event.target.value;
+    initNodes(TORSO_ID);
+  };
   document.getElementById("slider1").onchange = function (event) {
     console.log(event.target.value);
-    theta[HEAD1_ID] = event.target.value;
-    initNodes(HEAD1_ID);
+    theta[HEAD_X_ID] = event.target.value;
+    initNodes(HEAD_X_ID);
   };
   document.getElementById("slider2").onchange = function (event) {
     console.log(event.target.value);
@@ -451,8 +463,8 @@ window.onload = function init() {
   };
   document.getElementById("slider10").onchange = function (event) {
     console.log(event.target.value);
-    theta[HEAD2_ID] = event.target.value;
-    initNodes(HEAD2_ID);
+    theta[HEAD_Y_ID] = event.target.value;
+    initNodes(HEAD_Y_ID);
   };
   document.getElementById("slider11").onchange = function (event) {
     console.log(event.target.value);
@@ -472,7 +484,7 @@ var render = function () {
   gl.clear(gl.COLOR_BUFFER_BIT);
   traverse(TORSO_ID);
   if (stopButton) playAnimation();
-
+  else theta = [45, 0, 120, 280, 110, 280, 190, 10, 160, 20, 0, 0, 0];
   requestAnimFrame(render);
 };
 
@@ -502,10 +514,17 @@ var leftKick = function () {
   var anim3Playtime = 0;
   if (animOrder == 3 && anim3Playtime <= 100) {
     //swingNode(RIGHT_UPPER_ARM_ID, 115, 235, 2.5);
-    swingNode(LEFT_UPEER_ARM_ID, 115, 235, 2.3);
-    sleep(200).then(() => swingNode(LEFT_LOWER_ARM_ID, 250, 365, 2.3));
+    swingNode(LEFT_UPEER_ARM_ID, 115, 235, 2.32);
+    sleep(200).then(() => swingNode(LEFT_LOWER_ARM_ID, 250, 365, 2.2));
 
     swingNode(LEFT_UPPER_LEG_ID, 70, 200, 2.5);
+
+    //swingNode(RIGHT_UPPER_ARM_ID, 90, 130, 1);
+    swingNode(RIGHT_LOWER_ARM_ID, 220, 300, 1.66);
+    
+    swingNode(TORSO_X_ID, -10, 0, 0.2);
+    console.log(theta[TORSO_X_ID]);
+
     sleep(200).then(() => swingNode(RIGHT_UPPER_LEG_ID, 160, 170, 0.2));
     sleep(200).then(() => swingNode(RIGHT_LOWER_LEG_ID, 0, 20, 0.3));
     sleep(500).then(() => swingNode(LEFT_LOWER_LEG_ID, 0, 10, 0.3));
