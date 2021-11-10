@@ -53,9 +53,8 @@ var headWidth = 1.0;
 var boardHeight;
 var boardWidth;
 
-
 // Vriables with moving
-// 
+//
 var movingDirections = [1, 1, 1, 1, 1, 1, 1, 0, 0, 1];
 // TODO : Animation 3때문에 3으로 바뀜
 var animOrder = 3;
@@ -191,7 +190,7 @@ function initNodes(Id) {
 
     // TODO : Board의 initNode 설정
     case BOARD_ID:
-        break;
+      break;
   }
 }
 
@@ -342,21 +341,6 @@ function rightLowerLeg() {
   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
 }
 
-// Create a Flask
-// function flask() {
-//   instanceMatrix = mult(
-//     modelViewMatrix,
-//     translate(0.0, 0.5 * flaskNeckHeight, 0.0)
-//   );
-//   instanceMatrix = mult(
-//     instanceMatrix,
-//     scale4(flaskNeckWidth, flaskNeckHeight, flaskNeckWidth)
-//   );
-//   gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-//   gl.uniform4fv(fColor, [1.0, 0.0, 0.0, 1.0]);
-//   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
-// }
-
 function quad(a, b, c, d) {
   pointsArray.push(vertices[a]);
   pointsArray.push(vertices[b]);
@@ -383,9 +367,7 @@ window.onload = function init() {
   gl.viewport(0, 0, canvas.width, canvas.height);
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
-  //
   //  Load shaders and initialize attribute buffers
-  //
   program = initShaders(gl, "vertex-shader", "fragment-shader");
   gl.useProgram(program);
   instanceMatrix = mat4();
@@ -516,58 +498,21 @@ function moveNode(Id, speed) {
   initNodes(Id);
 }
 
-var anim1Playtime = 0;
-var Animation1 = function () {
-  if (animOrder == 1 && anim1Playtime <= 100) {
-    swingNode(LEFT_UPEER_ARM_ID, 115, 235, 2.5);
-    swingNode(RIGHT_UPPER_ARM_ID, 115, 235, 2.5);
-    swingNode(LEFT_UPPER_LEG_ID, 140, 220, 2.0);
-    swingNode(RIGHT_UPPER_LEG_ID, 140, 220, 2.0);
-    anim1Playtime += 1;
-  } else {
-    animOrder = 2;
-    Animation2();
-  }
-};
-
-var anim2Playtime = 0;
-
-var Animation2 = function () {
-  if (animOrder == 2 && anim2Playtime <= 100) {
-    moveNode(TORSO_ID, -0.5);
-    anim2Playtime += 1;
-  }
-  //else Animation3();
-};
-
-var anim3Playtime = 0;
-
-var Animation3 = function () {
-  if (animOrder == 3 && anim3Playtime <= 100) {
-    //swingNode(RIGHT_UPPER_ARM_ID, 115, 235, 2.5);
-    swingNode(LEFT_UPEER_ARM_ID, 115, 235, 2.5);
-    swingLeg(LEFT_UPPER_LEG_ID, 70, 190, 2.5);
-    //swingNode(RIGHT_UPPER_LEG_ID, 140, 220, 2.0);
-    ++anim3Playtime;
-  } 
-  else console.log('The end of Anim3');
-};
-
-var leftKick = function(){
-  anim3Playtime = 0;
+var leftKick = function () {
+  var anim3Playtime = 0;
   if (animOrder == 3 && anim3Playtime <= 100) {
     //swingNode(RIGHT_UPPER_ARM_ID, 115, 235, 2.5);
     swingNode(LEFT_UPEER_ARM_ID, 115, 235, 2.3);
     sleep(200).then(() => swingNode(LEFT_LOWER_ARM_ID, 250, 365, 2.3));
-    
+
     swingNode(LEFT_UPPER_LEG_ID, 70, 200, 2.5);
-    sleep(200).then(() => swingNode(RIGHT_UPPER_LEG_ID, 160, 170, .2));
-    sleep(200).then(() => swingNode(RIGHT_LOWER_LEG_ID, 0, 20, .3));
-    sleep(500).then(() => swingNode(LEFT_LOWER_LEG_ID, 0, 10, .3));
+    sleep(200).then(() => swingNode(RIGHT_UPPER_LEG_ID, 160, 170, 0.2));
+    sleep(200).then(() => swingNode(RIGHT_LOWER_LEG_ID, 0, 20, 0.3));
+    sleep(500).then(() => swingNode(LEFT_LOWER_LEG_ID, 0, 10, 0.3));
     //setTimeout(swingLeg(LEFT_LOWER_LEG_ID, 0, 0, .5), 3000);
     ++anim3Playtime;
-  } 
-}
+  }
+};
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
