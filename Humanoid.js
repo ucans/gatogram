@@ -59,7 +59,7 @@ var boardWidth;
 
 // Vriables with moving
 //
-var movingDirections = [1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1];
+var movingDirections = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 // TODO : Animation 3때문에 3으로 바뀜
 var animOrder = 3;
 const FORWARD = 1;
@@ -520,7 +520,7 @@ var leftKick = function () {
     swingNode(LEFT_UPPER_LEG_ID, 70, 200, 2.5);
 
     //swingNode(RIGHT_UPPER_ARM_ID, 90, 130, 1);
-    swingNode(RIGHT_LOWER_ARM_ID, 220, 300, 1.66);
+    swingNode(RIGHT_LOWER_ARM_ID, 220, 300, 1.65);
     
     swingNode(TORSO_X_ID, -10, 0, 0.2);
     console.log(theta[TORSO_X_ID]);
