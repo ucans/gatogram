@@ -67,7 +67,7 @@ var timeAnim2 = 0;
 var timeAnim3 = 0;
 
 var fColor;
-var stopButton = false;
+var stopButton = true;
 
 // TODO : 보드 추가해야함
 var numNodes = 10;
