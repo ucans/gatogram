@@ -55,8 +55,10 @@ var boardWidth;
 
 
 // Vriables with moving
-var movingDirections = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
-var animOrder = 1;
+// 
+var movingDirections = [1, 1, 1, 1, 1, 1, 1, 0, 0, 1];
+// TODO : Animation 3때문에 3으로 바뀜
+var animOrder = 3;
 const FORWARD = 1;
 const BACKWARD = 0;
 
@@ -71,7 +73,7 @@ var stopButton = false;
 // TODO : 보드 추가해야함
 var numNodes = 10;
 var numAngles = 11;
-var theta = [45, 0, 120, -110, 110, -65, -175, 10, 160, 20, 0];
+var theta = [45, 0, 120, 280, 110, 280, 190, 10, 160, 20, 0];
 var stack = [];
 var figure = [];
 
@@ -493,7 +495,7 @@ var render = function () {
 };
 
 function playAnimation() {
-  Animation1();
+  leftKick();
 }
 
 function swingNode(Id, min, max, speed) {
@@ -538,11 +540,35 @@ var Animation2 = function () {
   //else Animation3();
 };
 
+var anim3Playtime = 0;
+
 var Animation3 = function () {
-  if (animOrder == 3) {
-    swingJoint(LEFT_UPEER_ARM_ID, 115, 235, 2.5);
-    swingJoint(RIGHT_UPPER_ARM_ID, 115, 235, 2.5);
-    swingJoint(LEFT_UPPER_LEG_ID, 140, 220, 2.0);
-    swingJoint(RIGHT_UPPER_LEG_ID, 140, 220, 2.0);
-  } else Animation4();
+  if (animOrder == 3 && anim3Playtime <= 100) {
+    //swingNode(RIGHT_UPPER_ARM_ID, 115, 235, 2.5);
+    swingNode(LEFT_UPEER_ARM_ID, 115, 235, 2.5);
+    swingLeg(LEFT_UPPER_LEG_ID, 70, 190, 2.5);
+    //swingNode(RIGHT_UPPER_LEG_ID, 140, 220, 2.0);
+    ++anim3Playtime;
+  } 
+  else console.log('The end of Anim3');
 };
+
+var leftKick = function(){
+  anim3Playtime = 0;
+  if (animOrder == 3 && anim3Playtime <= 100) {
+    //swingNode(RIGHT_UPPER_ARM_ID, 115, 235, 2.5);
+    swingNode(LEFT_UPEER_ARM_ID, 115, 235, 2.3);
+    sleep(200).then(() => swingNode(LEFT_LOWER_ARM_ID, 250, 365, 2.3));
+    
+    swingNode(LEFT_UPPER_LEG_ID, 70, 200, 2.5);
+    sleep(200).then(() => swingNode(RIGHT_UPPER_LEG_ID, 160, 170, .2));
+    sleep(200).then(() => swingNode(RIGHT_LOWER_LEG_ID, 0, 20, .3));
+    sleep(500).then(() => swingNode(LEFT_LOWER_LEG_ID, 0, 10, .3));
+    //setTimeout(swingLeg(LEFT_LOWER_LEG_ID, 0, 0, .5), 3000);
+    ++anim3Playtime;
+  } 
+}
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
