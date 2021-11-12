@@ -67,7 +67,6 @@ const FORWARD = 1;
 const BACKWARD = 0;
 
 var fColor;
-var stopButton = false;
 
 // TODO : 보드 추가해야함
 var numNodes = 12;
@@ -82,6 +81,18 @@ for (var i = 0; i < numNodes; i++)
 var vBuffer;
 var modelViewLoc;
 var pointsArray = [];
+
+// Texture mapping
+var bannerToAnim = false;
+var bannerToAnimLoc;
+var texCoordsArray = [];
+var texture;
+var texCoord = [
+	vec2(0, 0),
+	vec2(0, 1),
+	vec2(1, 1),
+	vec2(1, 0)
+];
 
 function scale4(a, b, c) {
   var result = mat4();
@@ -347,16 +358,18 @@ function rightLowerLeg() {
 window.onload = function init() {
   canvas = document.getElementById("gl-canvas");
   gl = WebGLUtils.setupWebGL(canvas);
-  if (!gl) {
-    alert("WebGL isn't available");
-  }
+  if (!gl) alert("WebGL isn't available");
 
   gl.viewport(0, 0, canvas.width, canvas.height);
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
 
-  //  Load shaders and initialize attribute buffers
+  gl.enable(gl.DEPTH_TEST);
+	gl.enable(gl.CULL_FACE);
+	gl.cullFace(gl.FRONT);
+	
   program = initShaders(gl, "vertex-shader", "fragment-shader");
   gl.useProgram(program);
+
   instanceMatrix = mat4();
   projectionMatrix = ortho(-10.0, 10.0, -10.0, 10.0, -10.0, 10.0);
   modelViewMatrix = mat4();
@@ -374,11 +387,11 @@ window.onload = function init() {
 
   fColor = gl.getUniformLocation(program, "fColor");
   modelViewMatrixLoc = gl.getUniformLocation(program, "modelViewMatrix");
+  bannerToAnimLoc = gl.getUniformLocation(program, "bannerToAnim");
 
   cube();
 
   vBuffer = gl.createBuffer();
-
   gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, flatten(pointsArray), gl.STATIC_DRAW);
 
@@ -386,21 +399,74 @@ window.onload = function init() {
   gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(vPosition);
 
-  document.getElementById("stopButton").onclick = function () {
-    stopButton = !stopButton;
-  };
+  bannerToAnimLoc = gl.getUniformLocation(program, "bannerToAnim");
+  modelViewMatrixLoc = gl.getUniformLocation(program, "modelViewMatrix");
+
+  var tBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, flatten(texCoordsArray), gl.STATIC_DRAW);
+	
+	var vTexCoord = gl.getAttribLocation(program, "vTexCoord");
+	gl.vertexAttribPointer(vTexCoord, 2, gl.FLOAT, false, 0, 0);
+	gl.enableVertexAttribArray(vTexCoord);
+
+  var image = new Image();
+	image.onload = function() {
+		configureTexture(image);
+	}
+
+	image.crossorign = "";
+	image.src = "taekwondo.gif";
+	
+	renderBanner();
 
   for (i = 0; i < numNodes; i++) initNodes(i);
 
-  render();
+  canvas.addEventListener("click", function(event){
+		bannerToAnim = !bannerToAnim;
+		gl.uniform1i(bannerToAnimLoc, true);
+		console.log(bannerToAnim);
+		render();
+	});
+
 };
+
+function configureTexture(image){
+	texture = gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+	
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	
+	gl.uniform1i(gl.getUniformLocation(program, "texture"), 0);
+}
+
+var renderBanner = function() {
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
+	instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.0, 0.0) );
+	instanceMatrix = mult(instanceMatrix, rotate(180, 0, 0, 1)); // z-axis
+	instanceMatrix = mult(instanceMatrix, scale4( torsoHeight*3.0, torsoHeight*1.0, torsoHeight*3.0));
+  
+  gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+	
+  for(var i =0; i<6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4*i, 4);
+	
+  if(!bannerToAnim)
+		requestAnimFrame(renderBanner);
+}
 
 var render = function () {
   gl.clear(gl.COLOR_BUFFER_BIT);
   traverse(TORSO_ID);
-  if (stopButton) playAnimation();
+  if (bannerToAnim) playAnimation();
   else theta = [45, 0, 120, 280, 110, 280, 190, 10, 160, 20, 0, 0, 0];
-  requestAnimFrame(render);
+
+  if(bannerToAnim)
+    requestAnimFrame(render);
 };
 
 function playAnimation() {
@@ -451,6 +517,13 @@ function quad(a, b, c, d) {
   pointsArray.push(vertices[b]);
   pointsArray.push(vertices[c]);
   pointsArray.push(vertices[d]);
+
+  texCoordsArray.push(texCoord[0]);
+  texCoordsArray.push(texCoord[1]);
+  texCoordsArray.push(texCoord[2]);
+  texCoordsArray.push(texCoord[0]);
+  texCoordsArray.push(texCoord[2]);
+  texCoordsArray.push(texCoord[3]);
 }
 
 function cube() {
