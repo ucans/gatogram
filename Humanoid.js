@@ -85,7 +85,22 @@ var vd = vec4(0.816497, -0.471405, 0.333333, 1);
 var numTimesToSubdivide = 5;
 var flaskBodyIndex = 6; // Because of cube, it will be started from index of 6
 
-// Vriables with moving
+// Vriables with Banner (Texture)
+var bannerToAnim = false;
+var bannerToAnimLoc;
+
+var texCoordsArray = [];
+
+var texture;
+
+var texCoord = [
+	vec2(0, 0),
+	vec2(0, 1),
+	vec2(1, 1),
+	vec2(1, 0)
+];
+
+// Variables with Animation
 var animOrder = 1;
 const FORWARD = 1;
 const BACKWARD = 0;
@@ -95,8 +110,6 @@ var movingDirections =
 	FORWARD, FORWARD, FORWARD, FORWARD, 
 	FORWARD];
 
-
-// Variables with Animation
 var timeAnim1 = 0;
 var timeAnim2 = 0;
 var timeAnim3 = 0;
@@ -439,13 +452,13 @@ function stuff() {
 		gl.uniform4fv(fColor, [0.627451, 0.12549, 0.941176, 1.0]);
 		
 		// Chemical
-		instanceMatrix = mult(modelViewMatrix, translate(deskLocation + 1.0*chemicalWidth, deskHeight, 0.0) );
-		instanceMatrix = mult(instanceMatrix, scale4(1.3*chemicalWidth, 1.2*chemicalHeight, 1.2*chemicalWidth) );
+		instanceMatrix = mult(modelViewMatrix, translate(deskLocation + 1.0*chemicalWidth, 0.5*deskHeight+ 0.4*chemicalHeight, 0.0) );
+		instanceMatrix = mult(instanceMatrix, scale4(1.3*chemicalWidth, 0.8*chemicalHeight, 1.2*chemicalWidth) );
 		gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
 		for(var i =0; i<6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4*i, 4);
 		
 		// Chemical Cap
-		instanceMatrix = mult(modelViewMatrix, translate(deskLocation + 1.0*chemicalWidth, deskHeight + 0.5*chemicalHeight, 0.0) );
+		instanceMatrix = mult(modelViewMatrix, translate(deskLocation + 1.0*chemicalWidth, deskHeight + 0.6*chemicalHeight, 0.0) );
 		instanceMatrix = mult(instanceMatrix, scale4(1.3*0.5*chemicalWidth, 1.2*0.5*chemicalHeight, 1.2*0.5*chemicalWidth) );
 		gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
 		for(var i =0; i<6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4*i, 4);
@@ -474,7 +487,15 @@ function quad(a, b, c, d) {
      pointsArray.push(vertices[b]);
      pointsArray.push(vertices[c]);
      pointsArray.push(vertices[d]);
+	 
+	 texCoordsArray.push(texCoord[0]);
+	 texCoordsArray.push(texCoord[1]);
+	 texCoordsArray.push(texCoord[2]);
+	 texCoordsArray.push(texCoord[0]);
+	 texCoordsArray.push(texCoord[2]);
+	 texCoordsArray.push(texCoord[3]);
 }
+
 
 
 function cube()
@@ -526,6 +547,20 @@ function tetrahedron(a, b, c, d, n){
 	divideTriangle(a, c, d, n);
 }
 
+function configureTexture(image){
+	texture = gl.createTexture();
+	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+	
+	// let's assume all images are not a power of 2
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+	
+	gl.uniform1i(gl.getUniformLocation(program, "texture"), 0);
+}
+
 window.onload = function init() {
 
     canvas = document.getElementById( "gl-canvas" );
@@ -537,6 +572,8 @@ window.onload = function init() {
     gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
 
 	gl.enable(gl.DEPTH_TEST);
+	gl.enable(gl.CULL_FACE);
+	gl.cullFace(gl.FRONT);
 	
     //
     //  Load shaders and initialize attribute buffers
@@ -553,6 +590,7 @@ window.onload = function init() {
     gl.uniformMatrix4fv( gl.getUniformLocation( program, "projectionMatrix"), false, flatten(projectionMatrix) );
 	
 	fColor = gl.getUniformLocation(program, "fColor");
+	bannerToAnimLoc = gl.getUniformLocation(program, "bannerToAnim");
     modelViewMatrixLoc = gl.getUniformLocation(program, "modelViewMatrix");
 	
     cube();
@@ -567,15 +605,46 @@ window.onload = function init() {
     gl.vertexAttribPointer( vPosition, 4, gl.FLOAT, false, 0, 0 );
     gl.enableVertexAttribArray( vPosition );
 
-    for(i=0; i<numNodes; i++) initNodes(i);
-
+	var tBuffer = gl.createBuffer();
+	gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
+	gl.bufferData(gl.ARRAY_BUFFER, flatten(texCoordsArray), gl.STATIC_DRAW);
 	
+	var vTexCoord = gl.getAttribLocation(program, "vTexCoord");
+	gl.vertexAttribPointer(vTexCoord, 2, gl.FLOAT, false, 0, 0);
+	gl.enableVertexAttribArray(vTexCoord);
+	
+	var image = new Image();
+	image.onload = function() {
+		configureTexture(image);
+	}
+	image.crossorign = "";
+	image.src = "chemical.gif";
+	
+	renderBanner();
+	
+    for(i=0; i<numNodes; i++) initNodes(i);
 	
 	canvas.addEventListener("click", function(event){
+		bannerToAnim = !bannerToAnim;
+		gl.uniform1i(bannerToAnimLoc, true);
+		console.log(bannerToAnim);
 		render();
 	});
 }
 
+var renderBanner = function() {
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+	
+	instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.0, 0.0) );
+    // instanceMatrix = mult(instanceMatrix, rotate(theta[xAxis], 1, 0, 1)); // x-axis
+	// instanceMatrix = mult(instanceMatrix, rotate(theta[yAxis], 0, 1, 1)); // y-axis
+	instanceMatrix = mult(instanceMatrix, rotate(180, 0, 0, 1)); // z-axis
+	instanceMatrix = mult(instanceMatrix, scale4( torsoHeight*3.0, torsoHeight*1.0, torsoHeight*3.0));
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+	for(var i =0; i<6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4*i, 4);
+	if(!bannerToAnim)
+		requestAnimFrame(renderBanner);
+}
 
 var render = function() {
         gl.clear( gl.COLOR_BUFFER_BIT );
