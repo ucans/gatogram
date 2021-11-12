@@ -415,7 +415,7 @@ window.onload = function init() {
 		configureTexture(image);
 	}
 
-	image.crossorign = "";
+	image.crossorign = "Anonymous";
 	image.src = "taekwondo.gif";
 	
 	renderBanner();
