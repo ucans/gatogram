@@ -117,6 +117,7 @@ var timeAnim3 = 0;
 
 var fColor;
 var stopButton = false;
+var testBanner = false;
 
 // ==================================
 
@@ -613,21 +614,20 @@ window.onload = function init() {
 	gl.vertexAttribPointer(vTexCoord, 2, gl.FLOAT, false, 0, 0);
 	gl.enableVertexAttribArray(vTexCoord);
 	
-	var image = new Image();
-	image.onload = function() {
-		configureTexture(image);
+	var banner = new Image();
+	banner.onload = function() {
+		configureTexture(banner);
 	}
-	image.crossorign = "";
-	image.src = "chemical.gif";
+	banner.crossorign = "";
+	banner.src = "chemical.gif";
 	
 	renderBanner();
-	
+		
     for(i=0; i<numNodes; i++) initNodes(i);
 	
 	canvas.addEventListener("click", function(event){
 		bannerToAnim = !bannerToAnim;
 		gl.uniform1i(bannerToAnimLoc, true);
-		console.log(bannerToAnim);
 		render();
 	});
 }
