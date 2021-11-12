@@ -1,3 +1,5 @@
+// TODO : 배너가 텍스쳐 매핑
+
 "use strict";
 
 var canvas;
@@ -58,7 +60,6 @@ var boardHeight;
 var boardWidth;
 
 // Vriables with moving
-//
 var movingDirections = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 // TODO : Animation 3때문에 3으로 바뀜
 var animOrder = 3;
@@ -343,22 +344,6 @@ function rightLowerLeg() {
   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
 }
 
-function quad(a, b, c, d) {
-  pointsArray.push(vertices[a]);
-  pointsArray.push(vertices[b]);
-  pointsArray.push(vertices[c]);
-  pointsArray.push(vertices[d]);
-}
-
-function cube() {
-  quad(1, 0, 3, 2);
-  quad(2, 3, 7, 6);
-  quad(3, 0, 4, 7);
-  quad(6, 5, 1, 2);
-  quad(4, 5, 6, 7);
-  quad(5, 4, 0, 1);
-}
-
 window.onload = function init() {
   canvas = document.getElementById("gl-canvas");
   gl = WebGLUtils.setupWebGL(canvas);
@@ -401,76 +386,6 @@ window.onload = function init() {
   gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(vPosition);
 
-  document.getElementById("slider0").onchange = function (event) {
-    console.log(event.target.value);
-    theta[TORSO_ID] = event.target.value;
-    initNodes(TORSO_ID);
-  };
-  document.getElementById("slider12").onchange = function (event) {
-    console.log(event.target.value);
-    theta[TORSO_X_ID] = event.target.value;
-    initNodes(TORSO_ID);
-  };
-  document.getElementById("slider13").onchange = function (event) {
-    console.log(event.target.value);
-    theta[TORSO_Z_ID] = event.target.value;
-    initNodes(TORSO_ID);
-  };
-  document.getElementById("slider1").onchange = function (event) {
-    console.log(event.target.value);
-    theta[HEAD_X_ID] = event.target.value;
-    initNodes(HEAD_X_ID);
-  };
-  document.getElementById("slider2").onchange = function (event) {
-    console.log(event.target.value);
-    theta[LEFT_UPEER_ARM_ID] = event.target.value;
-    initNodes(LEFT_UPEER_ARM_ID);
-  };
-  document.getElementById("slider3").onchange = function (event) {
-    console.log(event.target.value);
-    theta[LEFT_LOWER_ARM_ID] = event.target.value;
-    initNodes(LEFT_LOWER_ARM_ID);
-  };
-  document.getElementById("slider4").onchange = function (event) {
-    console.log(event.target.value);
-    theta[RIGHT_UPPER_ARM_ID] = event.target.value;
-    initNodes(RIGHT_UPPER_ARM_ID);
-  };
-  document.getElementById("slider5").onchange = function (event) {
-    console.log(event.target.value);
-    theta[RIGHT_LOWER_ARM_ID] = event.target.value;
-    initNodes(RIGHT_LOWER_ARM_ID);
-  };
-  document.getElementById("slider6").onchange = function (event) {
-    console.log(event.target.value);
-    theta[LEFT_UPPER_LEG_ID] = event.target.value;
-    initNodes(LEFT_UPPER_LEG_ID);
-  };
-  document.getElementById("slider7").onchange = function (event) {
-    console.log(event.target.value);
-    theta[LEFT_LOWER_LEG_ID] = event.target.value;
-    initNodes(LEFT_LOWER_LEG_ID);
-  };
-  document.getElementById("slider8").onchange = function (event) {
-    console.log(event.target.value);
-    theta[RIGHT_UPPER_LEG_ID] = event.target.value;
-    initNodes(RIGHT_UPPER_LEG_ID);
-  };
-  document.getElementById("slider9").onchange = function (event) {
-    console.log(event.target.value);
-    theta[RIGHT_LOWER_LEG_ID] = event.target.value;
-    initNodes(RIGHT_LOWER_LEG_ID);
-  };
-  document.getElementById("slider10").onchange = function (event) {
-    console.log(event.target.value);
-    theta[HEAD_Y_ID] = event.target.value;
-    initNodes(HEAD_Y_ID);
-  };
-  document.getElementById("slider11").onchange = function (event) {
-    console.log(event.target.value);
-    theta[BOARD_ID] = event.target.value;
-    initNodes(BOARD_ID);
-  };
   document.getElementById("stopButton").onclick = function () {
     stopButton = !stopButton;
   };
@@ -493,8 +408,6 @@ function playAnimation() {
 }
 
 function swingNode(Id, min, max, speed) {
-  // 팔 각도범위 135~235
-  // 윗다리 140~220
   if (movingDirections[Id] == FORWARD) theta[Id] += speed;
   else theta[Id] -= speed;
 
@@ -513,13 +426,10 @@ function moveNode(Id, speed) {
 var leftKick = function () {
   var anim3Playtime = 0;
   if (animOrder == 3 && anim3Playtime <= 100) {
-    //swingNode(RIGHT_UPPER_ARM_ID, 115, 235, 2.5);
     swingNode(LEFT_UPEER_ARM_ID, 115, 235, 2.32);
     sleep(200).then(() => swingNode(LEFT_LOWER_ARM_ID, 250, 365, 2.2));
 
     swingNode(LEFT_UPPER_LEG_ID, 70, 200, 2.5);
-
-    //swingNode(RIGHT_UPPER_ARM_ID, 90, 130, 1);
     swingNode(RIGHT_LOWER_ARM_ID, 220, 300, 1.65);
     
     swingNode(TORSO_X_ID, -10, 0, 0.2);
@@ -528,11 +438,26 @@ var leftKick = function () {
     sleep(200).then(() => swingNode(RIGHT_UPPER_LEG_ID, 160, 170, 0.2));
     sleep(200).then(() => swingNode(RIGHT_LOWER_LEG_ID, 0, 20, 0.3));
     sleep(500).then(() => swingNode(LEFT_LOWER_LEG_ID, 0, 10, 0.3));
-    //setTimeout(swingLeg(LEFT_LOWER_LEG_ID, 0, 0, .5), 3000);
     ++anim3Playtime;
   }
 };
 
 function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
+}
+
+function quad(a, b, c, d) {
+  pointsArray.push(vertices[a]);
+  pointsArray.push(vertices[b]);
+  pointsArray.push(vertices[c]);
+  pointsArray.push(vertices[d]);
+}
+
+function cube() {
+  quad(1, 0, 3, 2);
+  quad(2, 3, 7, 6);
+  quad(3, 0, 4, 7);
+  quad(6, 5, 1, 2);
+  quad(4, 5, 6, 7);
+  quad(5, 4, 0, 1);
 }

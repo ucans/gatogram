@@ -16,9 +16,8 @@ uniform vec4 fColor;
 
 void main()
 {
-	gl_FragColor = fColor;
-	//gl_FragColor = vec4(0.0, 0.0, 0.501961, 1.0);
-
+    if()    gl_FragColor = fColor;
+    else    gl_FragColor = fColor;
 }
 </script>
 
@@ -26,66 +25,6 @@ void main()
 <script type="text/javascript" src="../Common/initShaders.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>
 <script type="text/javascript" src="Humanoid.js"></script>
-
-<div>
-    torso angle -180 <input id="slider0" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-<div>
-    head2 angle -180 <input id="slider10" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-
-<div>
-    head1 angle -180 <input id="slider1" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-
-<div>
-    left upper arm angle -180 <input id="slider2" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-<div>
-    left lower arm angle -180 <input id="slider3" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-<div>
-    right upper arm angle -180 <input id="slider4" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-<div>
-    right lower arm angle -180 <input id="slider5" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-<div>
-    left upper leg angle -180 <input id="slider6" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-<div>
-    left lower leg angle -180 <input id="slider7" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-<div>
-    right upper leg angle -180 <input id="slider8" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-
-<div>
-    right lower leg angle -180 <input id="slider9" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-<div>
-    borad angle -180 <input id="slider11" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-<div>
-    torso X angle -180 <input id="slider12" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
-<div>
-    torso Z angle -180 <input id="slider13" type="range" min="-180" max="180" step="10" value="0" />
-    180
-</div><br />
 
 <body>
     <button id="stopButton">STOP</button><br>
