@@ -41,6 +41,14 @@ const RIGHT_LOWER_LEG_ID = 9;
 // TODO : 보드 추가
 //const BOARD_ID = 11;
 
+
+var numTimesToSubdivide = 5;
+var sphereIndex = 6;
+
+var va = vec4(0.0, 0.0, -1.0, 1);
+var vb = vec4(0.0, 0.942809, 0.333333, 1);
+var vc = vec4(-0.816497, -0.471405, 0.333333, 1);
+var vd = vec4(0.816497, -0.471405, 0.333333, 1);
 // ===================================
 var torsoHeight = 5.0;
 var torsoWidth = 1.0;
@@ -233,14 +241,11 @@ function torso() {
 }
 
 function head() {
-  instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * headHeight, 0.0));
-  instanceMatrix = mult(
-    instanceMatrix,
-    scale4(headWidth, headHeight, headWidth)
-  );
-  gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
-  gl.uniform4fv(fColor, [0.0, 0.0, 0.501961, 1.0]);
-  for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
+    instanceMatrix = mult(modelViewMatrix, translate(0.0, 0.5 * headHeight, 0.0 ));
+   instanceMatrix = mult(instanceMatrix, scale4(0.9, 0.9, 0.9) );
+    gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(instanceMatrix));
+   gl.uniform4fv(fColor, [0.0, 0.0, 0.501961, 1.0]);
+    for(var i =6; i<sphereIndex; i++) gl.drawArrays(gl.TRIANGLES, i, 3);
 }
 
 function leftUpperArm() {
@@ -355,6 +360,48 @@ function rightLowerLeg() {
   for (var i = 0; i < 6; i++) gl.drawArrays(gl.TRIANGLE_FAN, 4 * i, 4);
 }
 
+function triangle(a, b, c)
+{
+	pointsArray.push(a);
+	pointsArray.push(b);
+	pointsArray.push(c);
+	
+	sphereIndex += 3;
+}
+
+
+function divideTriangle(a, b, c, count)
+{
+	if (count > 0){
+		var ab = mix(a, b, 0.5);
+		var ac = mix(a, c, 0.5);
+		var bc = mix(b, c, 0.5);
+		
+		ab = normalize(ab, true);
+		ac = normalize(ac, true);
+		bc = normalize(bc, true);
+		
+		divideTriangle(a, ab, ac, count-1);
+		divideTriangle(ab, b, bc, count-1);
+		divideTriangle(bc, c, ac, count-1);
+		divideTriangle(ab, bc, ac, count-1);
+	}
+	
+	else{
+		triangle(a, b, c);
+	}
+	
+}
+
+
+function tetrahedron(a, b, c, d, n){
+	divideTriangle(a, b, c, n);
+	divideTriangle(d, c, b, n);
+	divideTriangle(a, d, b, n);
+	divideTriangle(a, c, d, n);
+}
+
+
 window.onload = function init() {
   canvas = document.getElementById("gl-canvas");
   gl = WebGLUtils.setupWebGL(canvas);
@@ -390,7 +437,8 @@ window.onload = function init() {
   bannerToAnimLoc = gl.getUniformLocation(program, "bannerToAnim");
 
   cube();
-
+  tetrahedron(va, vb, vc, vd, numTimesToSubdivide);
+	
   vBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
   gl.bufferData(gl.ARRAY_BUFFER, flatten(pointsArray), gl.STATIC_DRAW);
