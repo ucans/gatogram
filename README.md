@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-    Play Pac-Man from a first-person perspective!
+    The pictogram department introduction animations.
 </p>
 
 
