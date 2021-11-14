@@ -21,4 +21,4 @@
 2021-2 Gachon Univ. Dept. of Software Computer Graphics Term Project
 |Name|<a href="https://github.com/gachon-software16-kbs">김범석<a>|<a href="https://github.com/ShinMinOh">신민오</a>|<a href="https://github.com/leeminsu212">이민수</a>|<a href="https://github.com/ucans">정수연</a>|
 |:--|:--:|:--:|:--:|:--:|
-|**Role**|Chemical dept. 3d modeling|Software dept. 3d modeling|Design dept. 3d modeling||Taekwondo dept. 3d modeling
+|**Role**|Chemical dept. 3d modeling|Software dept. 3d modeling|Design dept. 3d modeling||Taekwondo dept. 3d modeling|
